@@ -1,0 +1,2 @@
+g++  main.cc myarea.cc -o test `pkg-config gtkmm-3.0 --cflags --libs` `pkg-config glibmm-2.4 --cflags --libs`
+
