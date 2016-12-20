@@ -15,13 +15,6 @@ MyArea::MyArea()
     shm_buf = NULL;
   try
   {
-    // The fractal image has been created by the XaoS program.
-    // http://xaos.sourceforge.net
-    //m_image = Gdk::Pixbuf::create_from_resource("/image/fractal_image.png");
-    //m_image = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 320, 200);
-
-    //guint8* data = m_image->get_pixels();
-    //    guint8* data = (guint8*)malloc(3*320*200);
     int shm_fd = shm_open(SHARED_FB, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if(shm_fd > 0) {
         ftruncate(shm_fd, 320*200*3);
@@ -60,18 +53,18 @@ MyArea::MyArea()
     //std::cerr << "PixbufError: " << ex.what() << std::endl;
   }
 
-  // Show at least a quarter of the image.
-  if (m_image)
-    set_size_request(m_image->get_width()/2, m_image->get_height()/2);
+  if (m_image) {
+    set_size_request(m_image->get_width(), m_image->get_height());
+  }
 }
 
 MyArea::~MyArea()
 {
-    fprintf(stdout, "exiting\n");
     if(shm_buf != NULL) {
         munmap(shm_buf, 320*200*3);
     }
     if(shm_fd > 0) {
+        close(shm_fd);
         shm_unlink(SHARED_FB);
     }
 }
