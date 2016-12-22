@@ -1,4 +1,5 @@
 #include "myarea.h"
+#include <glibmm.h>
 #include <cairomm/context.h>
 #include <giomm/resource.h>
 #include <gdkmm/general.h> // set_source_pixbuf()
@@ -56,6 +57,18 @@ MyArea::MyArea()
   if (m_image) {
     set_size_request(m_image->get_width(), m_image->get_height());
   }
+
+  sigc::slot<bool> my_slot = sigc::bind(sigc::mem_fun(*this,
+              &MyArea::on_timeout), 1);
+
+  // This is where we connect the slot to the Glib::signal_timeout()
+  m_conn_timer = Glib::signal_timeout().connect(my_slot, 250);
+}
+
+bool MyArea::on_timeout(int timer_number)
+{    
+    queue_draw();
+    return true;
 }
 
 MyArea::~MyArea()
